@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+    <title>Data Entry Web App</title>
+	<link rel="stylesheet" href="style.css">	
+	<link rel="icon" href="img/favicon.png">
+
+	
+</head>
+<body class="background">
+<div class="container">
+		<div class="row">
+			<div class="col-10 mr-a" id="main" >
+				<div class="row">
+					<div class="col-11">	
+						<div class="row">
+							<div class="col-12">
+								<div class="box bmh-80 mnabgblack box-shadow text-center"><img src="img/logo.png" alt="Data Entry" style="border-radius: 5px; width:100%; max-width: 400px; height:auto;"/></div>
+					
+						<div class="row">
+							<div class="col-12">
+								<div class="card  box-shadow">
+								<div class="card-header mnabgblack"><h1 style="color: red;" class="text-center">ANUOLUWAPO BREAD</h1></div>
+									<div class="card-body"><address class="text-light text-center">Head Office: Abidjan Casier Carrefou Auto Ecole<br>
+										<tel>Tel: (+225)0503272554<br>
+											 (+225)071237066</tel>
+										</address></div>
+									<div class="card-body bg-grey"><h2 style="color: white;" class="text-center">Bread Request Entry Form</h2></div>
+									<div class="card-body">
+
+	
+    <form id="dataForm">
+		<input type="hidden" id="editId" name="editId">
+        <label for="name"><h3 style="color: yellow">Name:</h3></label>
+        <input class="form-control-md mr-t-10 plch-center" type="text" id="name" name="name" required><br><br>
+        <label for="date"><h3 style="color: yellow">Date:</h3></label>
+        <input class="form-control-md mr-t-10 plch-center" type="date" id="date" name="date" required><br><br>
+        <label for="b150"><h3 style="color: yellow">150 Bread:</h3></label>
+        <input class="form-control-md mr-t-10 plch-center" type="number" id="b150" name="b150" required><br><br>
+        <label for="b200"><h3 style="color: yellow">200 Bread:</h3></label>
+        <input class="form-control-md mr-t-10 plch-center" type="number" id="b200" name="b200" required><br><br>
+		<label for="b250"><h3 style="color: yellow">250 Bread:</h3></label>
+        <input class="form-control-md mr-t-10 plch-center" type="number" id="b250" name="b250" required><br><br>
+        <label for="b700"><h3 style="color: yellow">700 Bread:</h3></label>
+        <input class="form-control-md mr-t-10 plch-center" type="number" id="b700" name="b700" required><br><br>
+		<button type="button" onclick="saveData()" class="w-12 btn-md mnabgblack pd-5">Save</button><br><br>
+        <button type="button" onclick="editData()" class="w-12 btn-md mnabgblack pd-5">Edit</button><br><br>
+        <button type="button" onclick="filterDataByDate()" class="w-12 btn-md mnabgblack pd-5">Search</button><br><br>
+        <button type="button" onclick="deleteData()" class="w-12 btn-md mnabgblack pd-5">Delete</button><br><br>
+		<button type="button" onclick="calculateSum1()" class="w-12 btn-md mnabgblack pd-5">Add Data</button><br>
+		<br><br>
+    </form>
+	</div>
+	<div class="col-12">
+<div class="card-header mnabgblack"><h2 style="color: white;" class="text-center">Details of Request Bread List</h2></div>
+									<div class="card-body">
+									
+    <table id="dataTable">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Date</th>
+                <th>150 Bread</th>
+                <th>200 Bread</th>
+				<th>250 Bread</th>
+                <th>700 Bread</th>
+				<th>Bakery price</th>
+            </tr>
+        </thead>
+        <tbody id="searchMessage">
+            <!-- Data rows will be added here dynamically -->
+       
+        </tbody>
+
+    </table>
+	
+	<table>
+        <thead>
+         
+        </thead>
+        <tbody>
+            <td><h3>Total:</h3></td>
+			<td></td>
+            <td id="sumResult1">0</td>
+            <td id="sumResult2">0</td>
+			<td id="sumResult3">0</td>
+            <td id="sumResult4">0</td>
+			<td id="sumResult5">0</td>
+        </tbody>
+    </table>
+    </div>
+
+   <script src="app.js"></script>
+   <c>mustapha</c>
+</div>
+</body>
+</html>

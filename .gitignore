@@ -1,0 +1,14 @@
+# Ignore node_modules folder
+node_modules/
+
+# Ignore environment variables
+.env
+
+# Ignore database file (if using a local SQLite file)
+*.db
+
+# Ignore log files
+*.log
+
+# Ignore temporary files
+*.tmp

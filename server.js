@@ -248,10 +248,6 @@ app.get('/sum5', (req, res) => {
 });
 
 app.listen(port, () => {
-<<<<<<< HEAD
-    console.log('Server running on ${port});
-});
-=======
     console.log('Server running on ${port}');
 });
->>>>>>> 04532242f58f44e219da9c779314d9e225d7288d
+   

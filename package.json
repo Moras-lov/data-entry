@@ -1,15 +1,8 @@
 {
   "name": "data-entry",
   "version": "1.0.0",
-<<<<<<< HEAD
   "scripts": {
-	"start": "node server.js",
-	 "build": "react-scripts build"
-=======
-  "main": "app.js",
-  "scripts": {
-	"start": "node server.js",
->>>>>>> 04532242f58f44e219da9c779314d9e225d7288d
+	"start": "node server.js"
   },
   "keywords": [],
   "author": "Moraslov",
@@ -20,10 +13,9 @@
     "body-parser": "^1.20.3",
     "cors": "^2.8.5",
     "express": "^4.21.2",
-    "sqlite3": "^5.1.7",
-	"react-dom": "^17.0.2"
+    "sqlite3": "^5.1.7"
   },
   "engines": {
-    "node": "16.x"
+    "node": "22.x"
   }
 }

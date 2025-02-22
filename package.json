@@ -1,10 +1,9 @@
 {
   "name": "data-entry",
   "version": "1.0.0",
-  "main": "index.js",
   "scripts": {
-	"start": "node server.js"
-    "test": "echo \"Error: no test specified\" && exit 1"
+	"start": "node server.js",
+	 "build": "react-scripts build"
   },
   "keywords": [],
   "author": "Moraslov",
@@ -15,6 +14,10 @@
     "body-parser": "^1.20.3",
     "cors": "^2.8.5",
     "express": "^4.21.2",
-    "sqlite3": "^5.1.7"
+    "sqlite3": "^5.1.7",
+	"react-dom": "^17.0.2"
+  },
+  "engines": {
+    "node": "16.x"
   }
 }

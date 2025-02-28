@@ -1,5 +1,5 @@
 function fetchData() {
-	fetch('https://moraslov.vercel.app//data')
+	fetch('https://moraslov.vercel.app/data')
 		.then(response => response.json())
 		.then(data => {
 		renderTable(data);
@@ -11,7 +11,7 @@ function fetchData() {
 function filterDataByDate() {
 		const filterDate = document.getElementById('date').value;
 
-		fetch(`https://moraslov.vercel.app//data?date=${filterDate}`)
+		fetch(`https://moraslov.vercel.app/data?date=${filterDate}`)
 			.then(response => response.json())
 			.then(data => {
 				renderTable(data);

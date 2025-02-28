@@ -1,4 +1,4 @@
-const backendUrl ="data-entry-git-main-olaniyan-mustaphas-projects.vercel.app";
+const backendUrl ="https://data-entry-git-main-olaniyan-mustaphas-projects.vercel.app";
 
 function fetchData() {
 	fetch('${backendUrl}/data')

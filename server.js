@@ -247,6 +247,8 @@ app.get('/sum5', (req, res) => {
     });
 });
 
+//const port = 3000
+
 app.listen(port, () => {
     console.log('Server running on ${port}');
 });

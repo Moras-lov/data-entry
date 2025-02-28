@@ -5,7 +5,7 @@
 	"start": "node server.js"
   },
   "keywords": [],
-  "author": "Moraslov",
+  "author": "moraslov",
   "license": "ISC",
   "type": "commonjs",
   "description": "",

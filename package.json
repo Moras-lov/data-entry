@@ -2,7 +2,7 @@
   "name": "data-entry",
   "version": "1.0.0",
   "scripts": {
-	"start": "node server.js"
+    "start": "node server.js"
   },
   "keywords": [],
   "author": "moraslov",

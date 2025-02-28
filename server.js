@@ -4,10 +4,13 @@ const db = require('./database'); // Import the database module
 const cors = require('cors');
 const path = require('path');
 const app = express();
+const port = process.env.PORT || 3000;
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use(cors());
+app.use(cors({
+  origin: 'https://moraslov.vercel.app' // Allow only this origin
+}));
 app.use(bodyParser.json());
 
 let data = [];

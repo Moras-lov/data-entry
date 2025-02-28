@@ -1,4 +1,4 @@
-const backendUrl ="https://data-entry-git-main-olaniyan-mustaphas-projects.vercel.app";
+const backendUrl = "https://data-entry-git-main-olaniyan-mustaphas-projects.vercel.app";
 
 function fetchData() {
 	fetch('${backendUrl}/data')
@@ -244,7 +244,7 @@ function calculateSum2() {
 		})
 		.catch(error => {
 		console.error('Error:', error);
-		alert('Failed to calculate sum. Check the console for details.');
+		//alert('Failed to calculate sum. Check the console for details.');
 	});
 }
 function calculateSum3() {
@@ -263,7 +263,7 @@ function calculateSum3() {
 		})
 		.catch(error => {
 		console.error('Error:', error);
-		alert('Failed to calculate sum. Check the console for details.');
+		//alert('Failed to calculate sum. Check the console for details.');
 	});
 }
 function calculateSum4() {
@@ -282,7 +282,7 @@ function calculateSum4() {
 		})
 		.catch(error => {
 		console.error('Error:', error);
-		alert('Failed to calculate sum. Check the console for details.');
+		//alert('Failed to calculate sum. Check the console for details.');
 	});
 }	
 function calculateSum5() {
@@ -301,7 +301,7 @@ function calculateSum5() {
 		})
 		.catch(error => {
 		console.error('Error:', error);
-		alert('Failed to calculate sum. Check the console for details.');
+		//alert('Failed to calculate sum. Check the console for details.');
 	});
 }
 

@@ -1,5 +1,5 @@
 function fetchData() {
-	fetch('http://localhost:3000/data')
+	fetch('https://moraslov.vercel.app//data')
 		.then(response => response.json())
 		.then(data => {
 		renderTable(data);
@@ -11,7 +11,7 @@ function fetchData() {
 function filterDataByDate() {
 		const filterDate = document.getElementById('date').value;
 
-		fetch(`http://localhost:3000/data?date=${filterDate}`)
+		fetch(`https://moraslov.vercel.app//data?date=${filterDate}`)
 			.then(response => response.json())
 			.then(data => {
 				renderTable(data);
@@ -101,12 +101,12 @@ function saveData() {
 
 	const data = { name, date, b150, b200, b250, b700, btol};
 
-	let url = 'http://localhost:3000/save';
+	let url = 'https://moraslov.vercel.app/save';
 	let method = 'POST';
 
 	if (editId) {
 	// If editing, update the existing record
-	url = `http://localhost:3000/edit/${editId}`;
+	url = `https://moraslov.vercel.app/edit/${editId}`;
 	method = 'PUT';
 }
 
@@ -155,7 +155,7 @@ fetch(url, {
 function searchData() {
 	const searchText = document.getElementById('name').value.toLowerCase();
 
-	fetch(`http://localhost:3000/data?search=${searchText}`)
+	fetch(`https://moraslov.vercel.app/data?search=${searchText}`)
 		.then(response => {
 			if (!response.ok) {
 				if (response.status === 404) {
@@ -187,7 +187,7 @@ function deleteData() {
 
 	const id = selectedRow.getAttribute('data-id'); // Ensure each row has a data-id attribute
 
-	fetch(`http://localhost:3000/delete/${id}`, {
+	fetch(`https://moraslov.vercel.app/delete/${id}`, {
 	method: 'DELETE',
 })
 	.then(response => response.text())
@@ -205,7 +205,7 @@ function deleteData() {
 function calculateSum1() {
 	 const date = document.getElementById('date').value;
 	 
-	fetch(`http://localhost:3000/sum1?date=${date}`)
+	fetch(`https://moraslov.vercel.app/sum1?date=${date}`)
 		.then(response => {
 			if(!response.ok) {
 				throw new Error('Network response was not ok');
@@ -229,7 +229,7 @@ function calculateSum1() {
 function calculateSum2() {
 	 const date = document.getElementById('date').value;
 
-		fetch(`http://localhost:3000/sum2?date=${date}`)
+		fetch(`https://moraslov.vercel.app/sum2?date=${date}`)
 		.then(response => {
 			if(!response.ok) {
 				throw new Error('Network response was not ok');
@@ -248,7 +248,7 @@ function calculateSum2() {
 function calculateSum3() {
 	 const date = document.getElementById('date').value;
 
-		fetch(`http://localhost:3000/sum3?date=${date}`)
+		fetch(`https://moraslov.vercel.app/sum3?date=${date}`)
 		.then(response => {
 			if(!response.ok) {
 				throw new Error('Network response was not ok');
@@ -267,7 +267,7 @@ function calculateSum3() {
 function calculateSum4() {
 	const date = document.getElementById('date').value;
 
-		fetch(`http://localhost:3000/sum4?date=${date}`)
+		fetch(`https://moraslov.vercel.app/sum4?date=${date}`)
 		.then(response => {
 			if(!response.ok) {
 				throw new Error('Network response was not ok');
@@ -286,7 +286,7 @@ function calculateSum4() {
 function calculateSum5() {
 	 const date = document.getElementById('date').value;
 
-		fetch(`http://localhost:3000/sum5?date=${date}`)
+		fetch(`https://moraslov.vercel.app/sum5?date=${date}`)
 		.then(response => {
 			if(!response.ok) {
 				throw new Error('Network response was not ok');

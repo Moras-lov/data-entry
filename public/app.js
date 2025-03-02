@@ -1,4 +1,4 @@
-const backendUrl = "";
+const backendUrl = "https://moraslov.vercel.app";
 
 function fetchData() {
 	fetch(`${backendUrl}/data`)

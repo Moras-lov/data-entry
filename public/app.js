@@ -1,7 +1,7 @@
-const backendUrl = "https://moraslov.vercel.app";
+const backendUrl = "";
 
 function fetchData() {
-	fetch('${backendUrl}/data')
+	fetch(`${backendUrl}/data`)
 		.then(response => response.json())
 		.then(data => {
 		renderTable(data);
@@ -20,7 +20,8 @@ function filterDataByDate() {
 			})
 			.catch(error => {
 				console.error('Error filtering data:', error);
-				alert('Failed to filter data. Check the console for details.');
+				alert('Failed to filter data. Check if the date is valid.');
+				renderTable([]);
 			});
 	}
 
@@ -103,7 +104,7 @@ function saveData() {
 
 	const data = { name, date, b150, b200, b250, b700, btol};
 
-	let url = '${backendUrl}/save';
+	let url = `${backendUrl}/save`;
 	let method = 'POST';
 
 	if (editId) {
@@ -303,6 +304,31 @@ function calculateSum5() {
 		console.error('Error:', error);
 		//alert('Failed to calculate sum. Check the console for details.');
 	});
+}
+function checkSearch() {
+	const name = document.getElementById('name').value.trim();
+	const date = document.getElementById('date').value.trim();
+	  // Check which functions to call based on the input values
+    if (name && date) {
+        // If both name and date are provided
+        searchData();
+        filterDataByDate();
+		
+		 // Check if both results are empty
+        if (searchResults.length === 0 && filterResults.length === 0) {
+            alert('No results found for both name and date. You can search for one of them');
+		}
+    } else if (name) {
+        // If only name is provided
+        searchData();
+    } else if (date) {
+        // If only date is provided
+        filterDataByDate();
+    } else {
+        // If neither name nor date is provided
+        alert('Please enter a name or date to search.');
+    }
+	
 }
 
 function clearForm() {

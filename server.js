@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const db = require('./database'); // Import the database module
+const { connect, getDb } = require('./db');
+const Entry = require('./models/Entry');
 const cors = require('cors');
 const path = require('path');
 const app = express();
@@ -8,20 +9,14 @@ const port = process.env.PORT || 3000;
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use(cors({
-  origin: 'https://moraslov.vercel.app' // Allow only this origin
-}));
+app.use(cors());
 app.use(bodyParser.json());
+app.use(express.json());
 
 let data = [];
 
-// Route for the root URL
-// app.get('/', (req, res) => {
-    // res.send('Welcome to the Data Entry Web App!');
-// });
-
 // Save data
-app.post('/save', (req, res) => {
+app.post('/save', async (req, res) => {
     const { name, date, b150, b200, b250, b700, btol} = req.body;
 
     // Validate required fields
@@ -29,230 +24,257 @@ app.post('/save', (req, res) => {
         return res.status(400).send('Invalid data. Please check all fields.');
     }
 
-    const query = `
-        INSERT INTO entries ( name, date, b150, b200, b250, b700, btol)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
-    `;
-    const params = [name, date, b150, b200, b250, b700, btol];
+     try {
+        // Create a new document using the Entry model
+        const newEntry = new Entry({
+            name,
+            date,
+             b150: parseFloat(b150),
+            b200: parseFloat(b200),
+            b250: parseFloat(b250),
+            b700: parseFloat(b700),
+            btol: parseFloat(btol)
+        });
 
-    db.run(query, params, function (err) {
-        if (err) {
-            return res.status(500).send('Failed to save data.');
-        }
-		console.log('Data saved:', { id: this.lastID, name, date, b150, b200, b250, b700, btol });
+        // Save the document to the database
+        await newEntry.save();
+
+        console.log('Data saved:', newEntry);
         res.send('Data saved successfully!');
-    });
+    } catch (err) {
+        console.error('Error saving data:', err.message); // Log the error
+        res.status(500).send('Failed to save data.');
+    }
 });
 
 // Get all data (with search functionality)
-app.get('/data', (req, res) => {
-	const { date, startDate, endDate } = req.query;
-    const searchText = req.query.search ? req.query.search.toLowerCase() : '';
-    
-	let query = `SELECT * FROM entries`;
-	let params = [];
-	
-	if (date) {
-        // Filter by specific date
-        query += ` WHERE date = ?`;
-        params.push(date);
-    } else if (startDate && endDate) {
-        // Filter by date range
-        query += ` WHERE date BETWEEN ? AND ?`;
-        params.push(startDate, endDate);
-    }
+app.get('/data', async (req, res) => {
+	 const { date, startDate, endDate, search } = req.query;
 
-    db.all(query, params, (err, rows) => {
-        if (err) {
-            console.error('Error fetching data:', err.message); // Log the error
-            return res.status(500).send('Failed to fetch data.');
+    try {
+        // Build the MongoDB query
+        let query = {};
+        if (date) {
+            // Filter by specific date
+            query.date = date;
+        } else if (startDate && endDate) {
+            // Filter by date range
+            query.date = { $gte: startDate, $lte: endDate };
         }
-		if (rows.length === 0) {
+
+        // Add search functionality (case-insensitive)
+        if (search) {
+            query.name = { $regex: search, $options: 'i' }; // Case-insensitive search
+        }
+		 // Fetch data from MongoDB using the Entry model
+        const entries = await Entry.find(query); // Use Mongoose's `find` method
+		
+		  // Fetch data from MongoDB
+        if (entries.length === 0) {
             return res.status(404).json({ message: 'No results found.' });
         }
-        console.log('Data fetched from database:', rows); // Log the fetched data
-        return res.json(rows);
-    });
+
+        console.log('Data fetched from database:', entries); // Log the fetched data
+        return res.json(entries);
+    } catch (err) {
+        console.error('Error fetching data:', err.message); // Log the error
+        return res.status(500).send('Failed to fetch data.');
+    }
 });
 
-app.put('/edit/:id', (req, res) => {
+
+// Route to update data
+app.put('/edit/:id', async (req, res) => {
     const id = req.params.id;
-     const { name, date, b150, b200, b250, b700,} = req.body;
+    const { name, date, b150, b200, b250, b700 } = req.body;
 
     // Validate required fields
     if (!name || !date) {
         return res.status(400).send('Invalid data. Please check all fields.');
     }
 
-    const query = `
-        UPDATE entries
-        SET name = ?, date = ?, b150 = ?, b200 = ?, b250 = ?, b700 = ?
-        WHERE id = ?
-    `;
-    const params = [name, date, b150, b200, b250, b700, id];
+    try {
+        // Find the document by ID and update it
+        const updatedEntry = await Entry.findByIdAndUpdate(
+            id,
+            { name, date, b150, b200, b250, b700, btol },
+            { new: true } // Return the updated document
+        );
 
-    db.run(query, params, function (err) {
-        if (err) {
-            console.error('Error updating data:', err.message);
-            return res.status(500).send('Failed to update data.');
-        }
-        if (this.changes === 0) {
+        if (!updatedEntry) {
             return res.status(404).send('Data not found.');
         }
-        console.log('Data updated:', { id, name, date, b150, b200, b250, b700 });
+
+
+        console.log('Data updated:', updatedEntry);
         res.send('Data updated successfully!');
-    });
+    } catch (err) {
+        console.error('Error updating data:', err.message);
+        res.status(500).send('Failed to update data.');
+    }
 });
 
-
-// Delete data
-app.delete('/delete/:id', (req, res) => {
+// Route to delete data
+app.delete('/delete/:id', async (req, res) => {
     const id = req.params.id;
-    const query = `DELETE FROM entries WHERE id = ?`;
 
-    db.run(query, [id], function (err) {
-        if (err) {
-            console.error('Error deleting data:', err.message);
-            return res.status(500).send('Failed to delete data.');
-        }
-        if (this.changes === 0) {
+     try {
+        // Find the document by ID and delete it
+        const deletedEntry = await Entry.findByIdAndDelete(id);
+
+        if (!deletedEntry) {
             return res.status(404).send('Data not found.');
         }
-        console.log('Data deleted:', { id });
+
+        console.log('Data deleted:', deletedEntry);
         res.send('Data deleted successfully!');
-    });
+    } catch (err) {
+        console.error('Error deleting data:', err.message);
+        res.status(500).send('Failed to delete data.');
+    }
 });
 
-
-// Calculate the sum of Fields
-app.get('/sum1', (req, res) => {
+// Route to calculate the sum of a field
+app.get('/sum1', async (req, res) => {
     const { date, startDate, endDate } = req.query;
 
-    let query = `SELECT SUM(b150) AS sum FROM entries`;
-    let params = [];
-
-    if (date) {
-        // Calculate sum for a specific date
-        query += ` WHERE date = ?`;
-        params.push(date);
-    } else if (startDate && endDate) {
-        // Calculate sum for a date range
-        query += ` WHERE date BETWEEN ? AND ?`;
-        params.push(startDate, endDate);
-    }
-	  db.get(query, params, (err, row) => {
-        if (err) {
-            console.error('Error calculating sum:', err.message);
-            return res.status(500).send('Failed to calculate sum.');
+    try {
+        // Build the MongoDB query
+        let query = {};
+        if (date) {
+            query.date = date; // Filter by specific date
+        } else if (startDate && endDate) {
+            query.date = { $gte: startDate, $lte: endDate }; // Filter by date range
         }
-        console.log('Sum calculated:', row.sum || 0);
-        res.json({ sum1: row.sum || 0 });
-    });
+
+        // Calculate the sum of the `b150` field
+        const result = await Entry.aggregate([
+            { $match: query }, // Filter documents
+            { $group: { _id: null, sum: { $sum: '$b150' } } } // Calculate sum
+        ]);
+
+        const sum = result.length > 0 ? result[0].sum : 0;
+        console.log('Sum calculated:', sum);
+        res.json({ sum1: sum });
+    } catch (err) {
+        console.error('Error calculating sum:', err.message);
+        res.status(500).send('Failed to calculate sum.');
+    }
 });
 
-app.get('/sum2', (req, res) => {
+app.get('/sum2', async (req, res) => {
     const { date, startDate, endDate } = req.query;
 
-    let query = `SELECT SUM(b200) AS sum FROM entries`;
-    let params = [];
-
-    if (date) {
-        // Calculate sum for a specific date
-        query += ` WHERE date = ?`;
-        params.push(date);
-    } else if (startDate && endDate) {
-        // Calculate sum for a date range
-        query += ` WHERE date BETWEEN ? AND ?`;
-        params.push(startDate, endDate);
-    }
-	  db.get(query, params, (err, row) => {
-        if (err) {
-            console.error('Error calculating sum:', err.message);
-            return res.status(500).send('Failed to calculate sum.');
+    try {
+        // Build the MongoDB query
+        let query = {};
+        if (date) {
+            query.date = date; // Filter by specific date
+        } else if (startDate && endDate) {
+            query.date = { $gte: startDate, $lte: endDate }; // Filter by date range
         }
-        console.log('Sum calculated:', row.sum || 0);
-        res.json({ sum2: row.sum || 0 });
-    });
+
+        // Calculate the sum of the `b200` field
+        const result = await Entry.aggregate([
+            { $match: query }, // Filter documents
+            { $group: { _id: null, sum: { $sum: '$b200' } } } // Calculate sum
+        ]);
+       
+        const sum = result.length > 0 ? result[0].sum : 0;
+        console.log('Sum calculated:', sum);
+        res.json({ sum2: sum });
+    } catch (err) {
+        console.error('Error calculating sum:', err.message);
+        res.status(500).send('Failed to calculate sum.');
+    }
 });
 
-app.get('/sum3', (req, res) => {
+
+app.get('/sum3', async (req, res) => {
     const { date, startDate, endDate } = req.query;
 
-    let query = `SELECT SUM(b250) AS sum FROM entries`;
-    let params = [];
-
-    if (date) {
-        // Calculate sum for a specific date
-        query += ` WHERE date = ?`;
-        params.push(date);
-    } else if (startDate && endDate) {
-        // Calculate sum for a date range
-        query += ` WHERE date BETWEEN ? AND ?`;
-        params.push(startDate, endDate);
-    }
-	  db.get(query, params, (err, row) => {
-        if (err) {
-            console.error('Error calculating sum:', err.message);
-            return res.status(500).send('Failed to calculate sum.');
+    try {
+        // Build the MongoDB query
+        let query = {};
+        if (date) {
+            query.date = date; // Filter by specific date
+        } else if (startDate && endDate) {
+            query.date = { $gte: startDate, $lte: endDate }; // Filter by date range
         }
-        console.log('Sum calculated:', row.sum || 0);
-        res.json({ sum3: row.sum || 0 });
-    });
+
+        // Calculate the sum of the `b250` field
+        const result = await Entry.aggregate([
+            { $match: query }, // Filter documents
+            { $group: { _id: null, sum: { $sum: '$b250' } } } // Calculate sum
+        ]);
+      
+        const sum = result.length > 0 ? result[0].sum : 0;
+        console.log('Sum calculated:', sum);
+        res.json({ sum3: sum });
+    } catch (err) {
+        console.error('Error calculating sum:', err.message);
+        res.status(500).send('Failed to calculate sum.');
+    }
 });
+
 	
-app.get('/sum4', (req, res) => {
+app.get('/sum4', async (req, res) => {
     const { date, startDate, endDate } = req.query;
 
-    let query = `SELECT SUM(b700) AS sum FROM entries`;
-    let params = [];
-
-    if (date) {
-        // Calculate sum for a specific date
-        query += ` WHERE date = ?`;
-        params.push(date);
-    } else if (startDate && endDate) {
-        // Calculate sum for a date range
-        query += ` WHERE date BETWEEN ? AND ?`;
-        params.push(startDate, endDate);
-    }
-	  db.get(query, params, (err, row) => {
-        if (err) {
-            console.error('Error calculating sum:', err.message);
-            return res.status(500).send('Failed to calculate sum.');
+    try {
+        // Build the MongoDB query
+        let query = {};
+        if (date) {
+            query.date = date; // Filter by specific date
+        } else if (startDate && endDate) {
+            query.date = { $gte: startDate, $lte: endDate }; // Filter by date range
         }
-        console.log('Sum calculated:', row.sum || 0);
-        res.json({ sum4: row.sum || 0 });
-    });
+
+        // Calculate the sum of the `b700` field
+        const result = await Entry.aggregate([
+            { $match: query }, // Filter documents
+            { $group: { _id: null, sum: { $sum: '$b700' } } } // Calculate sum
+        ]);
+		
+        const sum = result.length > 0 ? result[0].sum : 0;
+        console.log('Sum calculated:', sum);
+        res.json({ sum4: sum });
+    } catch (err) {
+        console.error('Error calculating sum:', err.message);
+        res.status(500).send('Failed to calculate sum.');
+    }
 });
+
 	
-app.get('/sum5', (req, res) => {
+app.get('/sum5', async (req, res) => {
     const { date, startDate, endDate } = req.query;
 
-    let query = `SELECT SUM(btol) AS sum FROM entries`;
-    let params = [];
-
-    if (date) {
-        // Calculate sum for a specific date
-        query += ` WHERE date = ?`;
-        params.push(date);
-    } else if (startDate && endDate) {
-        // Calculate sum for a date range
-        query += ` WHERE date BETWEEN ? AND ?`;
-        params.push(startDate, endDate);
-    }
-	  db.get(query, params, (err, row) => {
-        if (err) {
-            console.error('Error calculating sum:', err.message);
-            return res.status(500).send('Failed to calculate sum.');
+    try {
+        // Build the MongoDB query
+        let query = {};
+        if (date) {
+            query.date = date; // Filter by specific date
+        } else if (startDate && endDate) {
+            query.date = { $gte: startDate, $lte: endDate }; // Filter by date range
         }
-        console.log('Sum calculated:', row.sum || 0);
-        res.json({ sum5: row.sum || 0 });
-    });
+
+        // Calculate the sum of the `btol` field
+       const result = await Entry.aggregate([
+            { $match: query }, // Filter documents
+            { $group: { _id: null, sum: { $sum: '$btol' } } } // Calculate sum
+        ]);
+
+        const sum = result.length > 0 ? result[0].sum : 0;
+        console.log('Sum calculated:', sum);
+        res.json({ sum5: sum });
+    } catch (err) {
+        console.error('Error calculating sum:', err.message);
+        res.status(500).send('Failed to calculate sum.');
+    }
 });
 
-//const port = 3000
 
 app.listen(port, () => {
-    console.log('Server running on ${port}');
+    console.log(`Server running on ${port}`);
 });
-   
+    

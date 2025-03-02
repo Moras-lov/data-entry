@@ -97,7 +97,7 @@ app.put('/edit/:id', async (req, res) => {
         // Find the document by ID and update it
         const updatedEntry = await Entry.findByIdAndUpdate(
             id,
-            { name, date, b150, b200, b250, b700, btol },
+            { name, date, b150, b200, b250, b700 },
             { new: true } // Return the updated document
         );
 

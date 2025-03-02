@@ -1,4 +1,5 @@
-const backendUrl = "https://data-entry-rjrw.onrender.com";
+//const backendUrl = "https://data-entry-rjrw.onrender.com";
+const backendUrl = "";
 
 function fetchData() {
 	fetch(`${backendUrl}/data`)
@@ -26,37 +27,44 @@ function filterDataByDate() {
 	}
 
 
+
 function renderTable(data = []) {
-	const tbody = document.querySelector('#dataTable tbody');
-	const searchMessage = document.getElementById('searchMessage');
-				
-	if (!tbody || !searchMessage) {
-		console.error('Table body or search message element not found!');
-		return;
-	}
+    const tbody = document.querySelector('#dataTable tbody');
+    const searchMessage = document.getElementById('searchMessage');
 
-	tbody.innerHTML = ''; // Clear existing rows
+    if (!tbody || !searchMessage) {
+        console.error('Table body or search message element not found!');
+        return;
+    }
 
-	if (data.length === 0) {
-		searchMessage.innerText = 'No datas found.'; // Display "No datas found" message
-		} else {
-			searchMessage.innerText = ''; // Clear the message if datas are found
-			data.forEach((item) => {
-				const row = `<tr data-id="${item.id}">
-					<td>${item.name}</td>
-					<td>${item.date}</td>
-					<td>${item.b150}</td>
-					<td>${item.b200}</td>
-					<td>${item.b250}</td>
-					<td>${item.b700}</td>
-					<td>${item.btol}</td>
-				</tr>`;
-				tbody.innerHTML += row;
-			});
+    tbody.innerHTML = ''; // Clear existing rows
+
+    if (!Array.isArray(data)) {
+        console.error('Data is not an array:', data);
+        return;
+    }
+
+    if (data.length === 0) {
+        searchMessage.innerText = 'No data found.'; // Display "No data found" message
+    } else {
+        searchMessage.innerText = ''; // Clear the message if data is found
+
+        // Build the entire HTML string first
+        const rows = data.map((item) => `
+            <tr data-id="${item._id}">
+                <td>${item.name}</td>
+                <td>${item.date}</td>
+                <td>${item.b150}</td>
+                <td>${item.b200}</td>
+                <td>${item.b250}</td>
+                <td>${item.b700}</td>
+                <td>${item.btol}</td>
+            </tr>
+        `).join('');
+
+        tbody.innerHTML = rows; // Set the HTML once
+    }
 }
-
-console.log('Table rendered with data:', data); // Log the rendered data
-}	
 	
 function saveData() {
 	const name = document.getElementById('name').value;
@@ -106,11 +114,13 @@ function saveData() {
 
 	let url = `${backendUrl}/save`;
 	let method = 'POST';
+	let body = JSON.stringify(data);
 
 	if (editId) {
 	// If editing, update the existing record
 	url = `${backendUrl}/edit/${editId}`;
 	method = 'PUT';
+	body = JSON.stringify(data);
 }
 
 fetch(url, {
@@ -118,7 +128,7 @@ fetch(url, {
 	headers: {
 	   'Content-Type': 'application/json',
 	},
-	body: JSON.stringify(data),
+	body: body,
 })
 	.then(response => response.text())
 	.then(message => {
@@ -188,9 +198,9 @@ function deleteData() {
 	return;
 }
 
-	const id = selectedRow.getAttribute('data-id'); // Ensure each row has a data-id attribute
+	const _id = selectedRow.getAttribute('data-id'); // Ensure each row has a data-id attribute
 
-	fetch(`${backendUrl}/delete/${id}`, {
+	fetch(`${backendUrl}/delete/${_id}`, {
 	method: 'DELETE',
 })
 	.then(response => response.text())
@@ -338,7 +348,6 @@ function clearForm() {
 	document.getElementById('b200').value = '';
 	document.getElementById('b250').value = '';
 	document.getElementById('b700').value = '';
-	document.getElementById('btol').value = '';
 }
 document.addEventListener('DOMContentLoaded', function () {
 	// Fetch data when the page loads
@@ -347,6 +356,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	
 	// Add row selection functionality
 	 const tbody = document.querySelector('#dataTable tbody');
+	 
     if (tbody) {
         tbody.addEventListener('click', function (event) {
             const selectedRow = event.target.closest('tr');

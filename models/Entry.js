@@ -8,7 +8,7 @@ const entrySchema = new mongoose.Schema({
     b200: { type: Number, required: true }, // b200 is required and must be a number
     b250: { type: Number, required: true }, // b250 is required and must be a number
     b700: { type: Number, required: true }, // b700 is required and must be a number
-    btol: { type: Number, required: false } // btol is required and must be a number
+    btol: { type: Number,} // btol is required and must be a number
 });
 
 // Create the model

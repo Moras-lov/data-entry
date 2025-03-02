@@ -85,19 +85,19 @@ app.get('/data', async (req, res) => {
 
 // Route to update data
 app.put('/edit/:id', async (req, res) => {
-    const id = req.params.id;
-    const { name, date, b150, b200, b250, b700 } = req.body;
+    const { id } = req.params;
+    const { name, date, b150, b200, b250, b700, btol } = req.body;
 
     // Validate required fields
-    if (!name || !date) {
-        return res.status(400).send('Invalid data. Please check all fields.');
-    }
+    // if (!name || !date) {
+        // return res.status(400).send('Invalid data. Please check all fields.');
+    // }
 
     try {
         // Find the document by ID and update it
         const updatedEntry = await Entry.findByIdAndUpdate(
             id,
-            { name, date, b150, b200, b250, b700 },
+            { name, date, b150, b200, b250, b700, btol },
             { new: true } // Return the updated document
         );
 
@@ -105,8 +105,8 @@ app.put('/edit/:id', async (req, res) => {
             return res.status(404).send('Data not found.');
         }
 
-
         console.log('Data updated:', updatedEntry);
+		res.json(updatedEntry);
         res.send('Data updated successfully!');
     } catch (err) {
         console.error('Error updating data:', err.message);

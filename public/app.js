@@ -1,5 +1,4 @@
-//const backendUrl = "https://data-entry-rjrw.onrender.com";
-const backendUrl = "";
+const backendUrl = "https://data-entry-rjrw.onrender.com" || "";
 
 function fetchData() {
 	fetch(`${backendUrl}/data`)
@@ -17,6 +16,7 @@ function filterDataByDate() {
 		fetch(`${backendUrl}/data?date=${filterDate}`)
 			.then(response => response.json())
 			.then(data => {
+				alert('Check your result');
 				renderTable(data);
 			})
 			.catch(error => {
@@ -182,6 +182,7 @@ function searchData() {
 		})
 		.then(data => {
 			console.log('Search datas:', data);
+			alert('Check your result');
 			renderTable(data);
 		})
 		.catch(error => {

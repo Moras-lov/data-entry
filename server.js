@@ -39,6 +39,11 @@ app.post('/save', async (req, res) => {
         // Save the document to the database
         await newEntry.save();
 
+        // Send SMS notification
+        const message = `New data saved: ${name}, ${date}, ${b150}, ${b200}, ${b250}, ${b700}, ${btol}`;
+		
+        //sendWhatsApp('+2348031115531', message);
+		sendSMS('+2348031115531', message); // Replace with the recipient's phone '+2250503272554'er
         console.log('Data saved:', newEntry);
         res.send('Data saved successfully!');
     } catch (err) {
@@ -73,7 +78,6 @@ app.get('/data', async (req, res) => {
         if (entries.length === 0) {
             return res.status(404).json({ message: 'No results found.' });
         }
-
         console.log('Data fetched from database:', entries); // Log the fetched data
         return res.json(entries);
     } catch (err) {
@@ -89,9 +93,9 @@ app.put('/edit/:id', async (req, res) => {
     const { name, date, b150, b200, b250, b700, btol } = req.body;
 
     // Validate required fields
-    // if (!name || !date) {
-        // return res.status(400).send('Invalid data. Please check all fields.');
-    // }
+     if (!name || !date) {
+         return res.status(400).send('Invalid data. Please check all fields.');
+     }
 
     try {
         // Find the document by ID and update it

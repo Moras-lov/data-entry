@@ -10,12 +10,14 @@
   "type": "commonjs",
   "description": "",
   "dependencies": {
+    "@vercel/analytics": "^1.5.0",
     "body-parser": "^1.20.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "mongodb": "^6.14.0",
-    "mongoose": "^8.11.0"
+    "mongoose": "^8.11.0",
+    "twilio": "^5.4.5"
   },
   "engines": {
     "node": "22.x"
